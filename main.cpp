@@ -191,9 +191,7 @@ int cd(){
 }
 int main(int argc, char* argv[], char**env)
 {
-    string input = "";
-
-
+    string input;
 
     while(true)  {
         cout << "> " << endl;
