@@ -1,104 +1,75 @@
-////
-//// Created by bakay on 4/1/17.
-////
 //
-//#include <boost/filesystem.hpp>
-//#include <string>
-//namespace fs = boost::filesystem;
+// Created by bakay on 4/1/17.
 //
-//
-//#ifndef SHELL_1_CP_H
-//#define SHELL_1_CP_H
-//
-//#endif //SHELL_1_CP_H
-//
-////template <typename ...string>
-//
-//bool cp(string copy_to, string copy_from ) {
-//    // copy_from = /home/bakay/Downloads/text.txt
-//    // name_of_file = "text.txt"
-//    // copy_to = /home/bakay/Downloads/folder/
-//
-//    string args = a, g = "";
-////
-////    std::vector<std::string> strs;//arguments
-////    boost::split(strs, args, boost::is_any_of("/"));
-//
-//
-//    std::vector<std::string> lines;//curr_dir
-//    boost::split(lines, copy_from, boost::is_any_of("/"));
-//
-////    string name_of_file = lines[lines.size() - 1];
-////    for (int i = 1; i < lines.size() - 1; i++){
-////        g+='/';
-////        g+=lines[i];
-////    }
-//
-//    fs::path source_path(copy_from);
-//    fs::path destination_path(copy_to);
-//    fs::copy_file(source_path, destination_path, fs::copy_option::overwrite_if_exists);
-//}
-///*
-//#include <fcntl.h>
-//#include <unistd.h>
-//#include <errno.h>
-//
-//int cp(const char *to, const char *from)
-//{
-//    int fd_to, fd_from;
-//    char buf[4096];
-//    ssize_t nread;
-//    int saved_errno;
-//
-//    fd_from = open(from, O_RDONLY);
-//    if (fd_from < 0)
-//        return -1;
-//
-//    fd_to = open(to, O_WRONLY | O_CREAT | O_EXCL, 0666);
-//    if (fd_to < 0)
-//        goto out_error;
-//
-//    while (nread = read(fd_from, buf, sizeof buf), nread > 0)
-//    {
-//        char *out_ptr = buf;
-//        ssize_t nwritten;
-//
-//        do {
-//            nwritten = write(fd_to, out_ptr, nread);
-//
-//            if (nwritten >= 0)
-//            {
-//                nread -= nwritten;
-//                out_ptr += nwritten;
-//            }
-//            else if (errno != EINTR)
-//            {
-//                goto out_error;
-//            }
-//        } while (nread > 0);
-//    }
-//
-//    if (nread == 0)
-//    {
-//        if (close(fd_to) < 0)
-//        {
-//            fd_to = -1;
-//            goto out_error;
-//        }
-//        close(fd_from);
-//
-//
-//        return 0;
-//    }
-//
-//    out_error:
-//    saved_errno = errno;
-//
-//    close(fd_from);
-//    if (fd_to >= 0)
-//        close(fd_to);
-//
-//    errno = saved_errno;
-//    return -1;
-//}
-//*/
+
+#ifndef SHELL_1_CP_H
+#define SHELL_1_CP_H
+
+#endif //SHELL_1_CP_H
+
+#include <string>
+using namespace std;
+namespace fs = boost::filesystem;
+
+bool cp(string copy_from, string copy_to) {
+
+    std::vector<std::string> lines;
+    boost::split(lines, copy_from, boost::is_any_of("/"));
+
+    string g;
+    vector<string> lst;
+    string s1 = "";
+    string name_of_file = lines[lines.size() - 1];
+
+    for (int i = 1; i < lines.size() - 1; i++){
+        g += '/';
+        g += lines[i];
+    }
+    if (fs::is_directory(g)) {      // check if the given string contains right directory
+
+        string s = "";
+        size_t num_of_br = count(copy_from.begin(), copy_from.end(), '{') +
+                           count(copy_from.begin(), copy_from.end(), '}');     //calculate amount of {} in copy_from
+
+        if (num_of_br == 2) {       // copy_from contains more than one file to copy
+            int i = 0;
+            while (i != name_of_file.length()) {
+                if (name_of_file[i] == '{') {
+                    s = name_of_file.substr(i + 1, name_of_file.length() - 2);      // string of names of files to copy
+                    break;
+                }
+                i++;
+
+            }
+
+            for (int i = 0; i <= s.length(); ++i) {
+                if (s[i] != ' ' && i != s.length()) {
+                    s1 += s[i];             // form a string - name of a file to add to lst
+                } else {
+                    lst.push_back(s1);      // vector that contains all names of files to be copied
+                    s1 = "";
+                }
+
+            }
+
+            for (size_t i = 0; i < lst.size(); ++i) {
+                string directory = g + "/";         //form full directory to the file
+//            cout << i << " : " << lst[i] << endl;
+                directory += lst[i];
+//                cout << directory << endl;
+//                cout << copy_to << endl;
+                fs::path source_path(directory);
+                fs::path destination_path(copy_to);
+                fs::copy_file(source_path, destination_path, fs::copy_option::overwrite_if_exists);
+//            /// cp /home/bakay/Downloads/{text.txt list.txt te.txt} /home/bakay/folder/
+            }
+        }
+
+        fs::path source_path(copy_from);
+        fs::path destination_path(copy_to);
+        fs::copy_file(source_path, destination_path, fs::copy_option::overwrite_if_exists);
+    }
+    else
+        cout << "No such directory!"<< endl;
+
+}
