@@ -85,14 +85,16 @@ bool cp(string copy_from, string copy_to) {
                 num_of_br++;
 
         while (i != name_of_file.length()) {
-                if (num_of_br) {
-                    s = name_of_file.substr(i + 1, name_of_file.length() - 2);
-                    break;
-                }
-                i++;
-
-                else
+            if (num_of_br == 0){
                 s = name_of_file;
+            } else{
+                s = name_of_file.substr(i + 1, name_of_file.length() - 2);
+                break;
+
+            }
+        }
+//                i++;
+
         }
 
         for (int i = 0; i <= s.length(); ++i) {
